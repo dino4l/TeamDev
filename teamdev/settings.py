@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'teamdev.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_pycopg2',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'teamdev',
         'USER': 'postgres',
         'PASSWORD': 'music3vat',

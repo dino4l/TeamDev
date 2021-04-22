@@ -65,3 +65,9 @@ class SignupForm(forms.Form):
             self.cleaned_data['password1']
         )
         return user
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']

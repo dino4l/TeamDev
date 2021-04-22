@@ -62,8 +62,29 @@ class Question(models.Model):
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
 
+
 class CommentManager(models.Manager):
     def newest(self, id):
         q = Question.objects.get(pk=id)
         return self.filter(question=q).order_by('-data_create')
-    
+
+
+class Comment(models.Model):
+    text = models.CharField(max_length=1024, verbose_name='Текст')
+    rating = models.IntegerField(default=0, db_index=True, verbose_name="Рейтинг")
+    data_create = models.DateField(auto_now_add=True, verbose_name="Дата создания")
+    correct_status = models.BooleanField(default=False, verbose_name="Корректность ответа")
+
+    author = models.ForeignKey('Profile', on_delete=models.PROTECT)
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, verbose_name="Вопрос", related_name='answer')
+
+    votes = GenericRelation(to='LikeDislike', related_query_name='comment')
+
+    objects = CommentManager()
+
+    def __str__(self):
+        return '{} : "{}"'.format(self.author.name, self.text)
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'

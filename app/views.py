@@ -4,6 +4,9 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 # Create your views here.
 
 from app.models import Profile, Question, Comment, Tag
+from app.forms import LoginForm, AskForm, SignupForm, CommentForm, SettingsForm, AvatarForm
+from django.contrib import messages
+
 
 def paginate(objects_list, request, per_page=5):
     limit = request.GET.get('limit', per_page)
@@ -44,4 +47,29 @@ def tag_questions(request):
         'tag': 'All tags',
         'tags': Tag.objects.popular(),
         'best_members': Profile.objects.best()
+    })
+    
+    
+def signin(request):
+    next_page = request.GET.get('next', '/')
+    if request.method == 'GET':
+        form = LoginForm()
+    else:
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            user = auth.authenticate(request, **form.cleaned_data)
+            if user is not None:
+                auth.login(request, user)
+                print("\nFEFE\n")
+                return redirect('/api/v1/')
+        messages.error(request, 'Invalid username or password')
+        print("\nKEKE\n")
+        return redirect(next_page)
+
+
+    return render(request, 'signin.html', {
+        'tags': Tag.objects.popular(),
+        'best_members': Profile.objects.best(),
+        'form': form,
+        'next': next_page
     })

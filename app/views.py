@@ -1,16 +1,32 @@
-from django.shortcuts import render
-
+# django
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import  get_object_or_404, render, redirect, reverse
 from django.http import HttpResponse
 from django.contrib import auth
 from django.db.models import F
-# Create your views here.
 
+from django.views.decorators.http import require_POST
+
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAdminUser
+
+# app
 from app.models import Profile, Question, Comment, Tag
 from app.forms import LoginForm, AskForm, SignupForm, CommentForm, SettingsForm, AvatarForm
 from django.contrib import messages
+
+class CreateUserAPIView(APIView):
+    # Allow any user (authenticated or not) to access this url
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        user = request.data
+        serializer = UserSerializer(data=user)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 def paginate(objects_list, request, per_page=5):

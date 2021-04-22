@@ -1,6 +1,11 @@
 from django.shortcuts import render
 
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import  get_object_or_404, render, redirect, reverse
+from django.http import HttpResponse
+from django.contrib import auth
+from django.db.models import F
 # Create your views here.
 
 from app.models import Profile, Question, Comment, Tag
@@ -49,6 +54,16 @@ def tag_questions(request):
         'best_members': Profile.objects.best()
     })
     
+def tag_page(request, pk):
+    questions = Question.objects.filter(tags__title=pk)
+    tag = Tag.objects.get(title=pk)
+
+    return render(request, 'tag_questions.html', {
+        'questions': questions,
+        'tag': tag.title,
+        'tags': Tag.objects.popular(),
+        'best_members': Profile.objects.best()
+    })  
     
 def signin(request):
     next_page = request.GET.get('next', '/')
@@ -93,3 +108,7 @@ def signup(request):
         'best_members': Profile.objects.best(),
         'form': form
     })
+    
+def signout(request):
+    auth.logout(request)
+    return redirect("signin")

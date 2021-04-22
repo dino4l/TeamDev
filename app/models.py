@@ -4,9 +4,11 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class ProfileManager(models.Manager):
     def best(self):
         return self.order_by('-rating')[:5]
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE, related_name='profile')
@@ -61,3 +63,85 @@ class Question(models.Model):
     class Meta:
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
+
+
+class CommentManager(models.Manager):
+    def newest(self, id):
+        q = Question.objects.get(pk=id)
+        return self.filter(question=q).order_by('-data_create')
+
+
+class Comment(models.Model):
+    text = models.CharField(max_length=1024, verbose_name='Текст')
+    rating = models.IntegerField(default=0, db_index=True, verbose_name="Рейтинг")
+    data_create = models.DateField(auto_now_add=True, verbose_name="Дата создания")
+    correct_status = models.BooleanField(default=False, verbose_name="Корректность ответа")
+
+    author = models.ForeignKey('Profile', on_delete=models.PROTECT)
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, verbose_name="Вопрос", related_name='answer')
+
+    votes = GenericRelation(to='LikeDislike', related_query_name='comment')
+
+    objects = CommentManager()
+
+    def __str__(self):
+        return '{} : "{}"'.format(self.author.name, self.text)
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+
+
+class TagManager(models.Manager):
+    def by_tag(self, tag_title):
+        tag = self.get(title=tag_title)
+        return tag.question.all() if tag else None
+
+    def popular(self):
+        return self.order_by('-references')[:7]
+
+
+class Tag(models.Model):
+    title = models.CharField(max_length=256, verbose_name='Название тега')
+    references = models.PositiveIntegerField(default=0)
+
+    objects = TagManager()
+
+    def __str__(self):
+        return '{}'.format(self.title)
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
+
+class LikeDislikeManager(models.Manager):
+    def likeOrDislike(self, valueLikeDislike, profileID, fromWhomLikeDislikeID, flag):
+        if (flag == 0):
+            obj = Question.objects.get(id=fromWhomLikeDislikeID)
+        else:
+            obj = Comment.objects.get(id=fromWhomLikeDislikeID)
+
+        self.create(value=valueLikeDislike, profile_id=profileID, content_object=obj)
+        obj.rating += valueLikeDislike
+        obj.save()
+        return obj.rating
+
+
+class LikeDislike(models.Model):
+    value = models.SmallIntegerField(default=0, verbose_name='Like or not')
+
+    profile = models.ForeignKey(Profile, related_name='voted', on_delete=models.CASCADE)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField() # id
+    content_object = GenericForeignKey()
+
+    objects = LikeDislikeManager()
+
+    def __str__(self):
+        return '{}'.format(self.profile)
+
+    class Meta:
+        verbose_name = 'Лайк или дизлайк'
+        verbose_name_plural = 'Лайки или дизлайки'

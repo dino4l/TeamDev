@@ -42,6 +42,30 @@ def hot_questions(request):
         'tags': Tag.objects.popular(),
         'best_members': Profile.objects.best()
     })
+
+def question_page(request, pk):
+    db_question = Question.objects.get(id=pk)
+    comments = Comment.objects.newest(db_question.id)
+    pag_comments = paginate(comments, request)
+
+    if request.method == "GET":
+        form = CommentForm()
+    else:
+        form = CommentForm(data=request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user.profile
+            comment.question = db_question
+            comment.save()
+            return redirect(reverse('selectedquestion', kwargs={'pk': db_question.pk}))
+
+    return render(request, 'question_page.html', {
+        'question': db_question,
+        'comments': pag_comments,
+        'tags': Tag.objects.popular(),
+        'best_members': Profile.objects.best(),
+        'form': form
+    })
     
 def tag_questions(request):
 

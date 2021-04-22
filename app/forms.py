@@ -1,7 +1,8 @@
 from django import forms
-
+from app.models import Question, Comment
 from django.contrib.auth.models import User
-from app.models import Question, Profile, Tag, Comment
+from django.core.exceptions import ValidationError
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(required=True,)
@@ -71,3 +72,10 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['text']
+
+
+class SettingsForm(forms.Form):
+    username = forms.CharField(label="Username", required=True)
+    name = forms.CharField(label="Name", required=True)
+    email = forms.EmailField(label="Email", required=True)
+    avatar = forms.ImageField(label="Avatar", required=False)

@@ -169,3 +169,21 @@ def signup(request):
 def signout(request):
     auth.logout(request)
     return redirect("signin")
+    
+def settings(request):
+    form_class = AvatarForm
+    if request.method == 'GET':
+        form = form_class()
+    else:
+        form = form_class(
+            data=request.POST, files=request.FILES,
+            instance=request.user.profile
+        )
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('settings'))
+    return render(request, 'settings.html', {
+        'tags': Tag.objects.popular(),
+        'best_members': Profile.objects.best(),
+        'form': form
+    })

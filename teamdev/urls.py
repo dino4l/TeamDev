@@ -19,11 +19,16 @@ from app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('api/v1/', views.new_questions, name='newquestions'),
     path('api/v1/new_questions/', views.new_questions, name='newquestions'),
     path('api/v1/hot_questions/', views.hot_questions, name='hotquestions'),
+    path('api/v1/ask_question/', views.ask_question, name='askquestion'),
     path('api/v1/tag/', views.tag_questions, name='tagquestions'),
+    path('api/v1/settings/', views.settings, name='settings'),
     path('api/v1/signin/', views.signin, name='signin'),
     path('api/v1/signup/', views.signup, name='signup'),
     path('api/v1/signout/', views.signout, name='signout'),
+    path('api/v1/question/<int:pk>/', views.question_page, name='selectedquestion'),
+    path('api/v1/tag/<str:pk>/', views.tag_page, name='tagquestions'),
 ]

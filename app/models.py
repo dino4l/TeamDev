@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
@@ -21,3 +23,41 @@ class Profile(models.Model):
     class Meta:
         verbose_name = 'Профиль'
         verbose_name_plural = 'Профили'
+
+
+class QuestionManager(models.Manager):
+    def newest(self):
+        return self.filter(active_status=True).order_by('-data_create')
+
+    def hottest(self):
+        return self.filter(active_status=True).order_by('-rating')
+
+    def tagged(self, title):
+        return self.filter(active_status=True, tags__title=title)
+
+    def by_id(self, id):
+        return self.get(id=id)
+
+
+class Question(models.Model):
+    title = models.CharField(max_length=256, verbose_name='Заголовок')
+    text = models.CharField(max_length=1024, verbose_name='Текст')
+    data_create = models.DateField(auto_now_add=True, verbose_name="Дата создания")
+    rating = models.IntegerField(default=0, db_index=True, verbose_name="Рейтинг")
+    active_status = models.BooleanField(default=True, verbose_name="Статус активности")
+    answers_number = models.PositiveIntegerField(default=0, verbose_name="Количество ответов")
+
+    author = models.ForeignKey('Profile', on_delete=models.CASCADE, verbose_name="Автор вопроса")
+    likes = models.ManyToManyField('Profile', related_name='comments', default=None, blank=True, verbose_name="Лайки пользователей")
+    tags = models.ManyToManyField('Tag', blank=True, verbose_name="Теги", related_name='question')
+
+    votes = GenericRelation(to='LikeDislike', related_query_name='question')
+
+    objects = QuestionManager()
+
+    def __str__(self):
+        return '{}'.format(self.title)
+
+    class Meta:
+        verbose_name = 'Вопрос'
+        verbose_name_plural = 'Вопросы'

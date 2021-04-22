@@ -73,3 +73,23 @@ def signin(request):
         'form': form,
         'next': next_page
     })
+
+def signup(request):
+    if request.method == 'GET':
+        form = SignupForm()
+    else:
+        form = SignupForm(data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            auth.authenticate(request, **form.cleaned_data)
+            profile = Profile(name=request.POST['username'], user=user)
+            profile.save()
+            return redirect('/api/v1/')
+        messages.error(request, 'User already exist')
+        return redirect('/api/v1/')
+
+    return render(request, 'signup.html', {
+        'tags': Tag.objects.popular(),
+        'best_members': Profile.objects.best(),
+        'form': form
+    })

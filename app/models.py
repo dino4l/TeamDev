@@ -61,3 +61,53 @@ class Question(models.Model):
     class Meta:
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
+
+
+class CommentManager(models.Manager):
+    def newest(self, id):
+        q = Question.objects.get(pk=id)
+        return self.filter(question=q).order_by('-data_create')
+
+
+class Comment(models.Model):
+    text = models.CharField(max_length=1024, verbose_name='Текст')
+    rating = models.IntegerField(default=0, db_index=True, verbose_name="Рейтинг")
+    data_create = models.DateField(auto_now_add=True, verbose_name="Дата создания")
+    correct_status = models.BooleanField(default=False, verbose_name="Корректность ответа")
+
+    author = models.ForeignKey('Profile', on_delete=models.PROTECT)
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, verbose_name="Вопрос", related_name='answer')
+
+    votes = GenericRelation(to='LikeDislike', related_query_name='comment')
+
+    objects = CommentManager()
+
+    def __str__(self):
+        return '{} : "{}"'.format(self.author.name, self.text)
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+
+
+class TagManager(models.Manager):
+    def by_tag(self, tag_title):
+        tag = self.get(title=tag_title)
+        return tag.question.all() if tag else None
+
+    def popular(self):
+        return self.order_by('-references')[:7]
+
+
+class Tag(models.Model):
+    title = models.CharField(max_length=256, verbose_name='Название тега')
+    references = models.PositiveIntegerField(default=0)
+
+    objects = TagManager()
+
+    def __str__(self):
+        return '{}'.format(self.title)
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'

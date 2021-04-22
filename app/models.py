@@ -89,7 +89,7 @@ class Comment(models.Model):
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 
-        
+
 class TagManager(models.Manager):
     def by_tag(self, tag_title):
         tag = self.get(title=tag_title)
@@ -97,3 +97,17 @@ class TagManager(models.Manager):
 
     def popular(self):
         return self.order_by('-references')[:7]
+
+
+class Tag(models.Model):
+    title = models.CharField(max_length=256, verbose_name='Название тега')
+    references = models.PositiveIntegerField(default=0)
+
+    objects = TagManager()
+
+    def __str__(self):
+        return '{}'.format(self.title)
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'

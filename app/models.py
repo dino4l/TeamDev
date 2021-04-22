@@ -61,3 +61,9 @@ class Question(models.Model):
     class Meta:
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
+
+class CommentManager(models.Manager):
+    def newest(self, id):
+        q = Question.objects.get(pk=id)
+        return self.filter(question=q).order_by('-data_create')
+    

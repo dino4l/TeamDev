@@ -88,7 +88,24 @@ def tag_page(request, pk):
         'tags': Tag.objects.popular(),
         'best_members': Profile.objects.best()
     })  
-    
+
+def ask_question(request):
+    if request.method == "GET":
+        form = AskForm()
+    else:
+        form = AskForm(data=request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.author = request.user.profile
+            question.save()
+            return redirect(reverse('selectedquestion', kwargs={'pk': question.pk}))
+    return render(request, 'ask_question.html', {
+        'tags': Tag.objects.popular(),
+        'best_members': Profile.objects.best(),
+        'form': form
+    })
+
+   
 def signin(request):
     next_page = request.GET.get('next', '/')
     if request.method == 'GET':

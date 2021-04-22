@@ -88,3 +88,12 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
+        
+class TagManager(models.Manager):
+    def by_tag(self, tag_title):
+        tag = self.get(title=tag_title)
+        return tag.question.all() if tag else None
+
+    def popular(self):
+        return self.order_by('-references')[:7]

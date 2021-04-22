@@ -59,6 +59,16 @@ def hot_questions(request):
         'best_members': Profile.objects.best()
     })
 
+@require_POST
+@login_required
+def vote(request):
+    data = request.POST
+    from pprint import pformat
+    print('\n\n', '=' * 100)
+    print(f'HERE: {pformat(data)}')
+    print('=' * 100, '\n\n')
+    return JsonResponse({'question_likes': 42})
+    
 def question_page(request, pk):
     db_question = Question.objects.get(id=pk)
     comments = Comment.objects.newest(db_question.id)
@@ -103,8 +113,9 @@ def tag_page(request, pk):
         'tag': tag.title,
         'tags': Tag.objects.popular(),
         'best_members': Profile.objects.best()
-    })  
-
+    })
+    
+@login_required
 def ask_question(request):
     if request.method == "GET":
         form = AskForm()
@@ -169,7 +180,8 @@ def signup(request):
 def signout(request):
     auth.logout(request)
     return redirect("signin")
-    
+
+@login_required    
 def settings(request):
     form_class = AvatarForm
     if request.method == 'GET':

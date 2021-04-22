@@ -4,9 +4,11 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class ProfileManager(models.Manager):
     def best(self):
         return self.order_by('-rating')[:5]
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE, related_name='profile')
@@ -111,3 +113,35 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
+
+
+class LikeDislikeManager(models.Manager):
+    def likeOrDislike(self, valueLikeDislike, profileID, fromWhomLikeDislikeID, flag):
+        if (flag == 0):
+            obj = Question.objects.get(id=fromWhomLikeDislikeID)
+        else:
+            obj = Comment.objects.get(id=fromWhomLikeDislikeID)
+
+        self.create(value=valueLikeDislike, profile_id=profileID, content_object=obj)
+        obj.rating += valueLikeDislike
+        obj.save()
+        return obj.rating
+
+
+class LikeDislike(models.Model):
+    value = models.SmallIntegerField(default=0, verbose_name='Like or not')
+
+    profile = models.ForeignKey(Profile, related_name='voted', on_delete=models.CASCADE)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField() # id
+    content_object = GenericForeignKey()
+
+    objects = LikeDislikeManager()
+
+    def __str__(self):
+        return '{}'.format(self.profile)
+
+    class Meta:
+        verbose_name = 'Лайк или дизлайк'
+        verbose_name_plural = 'Лайки или дизлайки'

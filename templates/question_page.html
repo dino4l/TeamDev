@@ -1,0 +1,46 @@
+{% extends 'inc/base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block navbar %}
+    {% include 'inc/logined_navbar.html' %}
+{% endblock navbar %}
+
+{% block content %}
+<div class="col-9">
+   <! –– View Question Box ––>
+   {% include 'inc/view_question_box.html' %}
+
+   <! –– Answer Box ––>
+   {% for comment in comments %}
+      {% include 'inc/comment_box.html' %}
+   {% endfor %}
+
+
+
+   {% if request.user.is_authenticated %}
+      <div class = "row">
+         <form class="form setting-form" method="POST" action="{% url 'selectedquestion' question.id %}" enctype="" >
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+            <button type="submit" class="btn btn-secondary ask-btn" >Comment</button>
+            {% endbuttons %}
+         </form>
+      </div>
+   {% endif %}
+
+
+   <! –– Pagination ––>
+   {% with objects=comments %}
+        {% include 'inc/pagination.html' %}
+   {% endwith %}
+
+</div>
+
+{% endblock content %}
+
+{% block right %}
+   {% include 'inc/block_right.html' %}
+{% endblock right %}
+

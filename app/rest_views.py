@@ -31,3 +31,17 @@ def hot_view(request):
     questions = hot_questions_case(page, limit)
     serializer = QuestionSerializer(questions, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def question_id_view(request, qid):
+    page = request.GET.get('page', 1)
+    limit = request.GET.get('limit', 10)
+    question, answers = question_by_id_case(qid, page, limit)
+    print(question)
+    print(answers)
+    if question is None:
+        return Response('Error', status=status.HTTP_400_BAD_REQUEST)
+    qserializer = QuestionSerializer(question)
+    aserializer = AnswerSerializer(answers, many=True)
+    data = {"question": qserializer.data, "answers": aserializer.data }
+    return Response(data)

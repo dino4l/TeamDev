@@ -45,3 +45,22 @@ def question_id_view(request, qid):
     aserializer = AnswerSerializer(answers, many=True)
     data = {"question": qserializer.data, "answers": aserializer.data }
     return Response(data)
+
+@api_view(['GET', 'POST'])
+def question_answer_view(request, qid):
+    if request.method == 'GET':
+        page = request.GET.get('page', 1)
+        limit = request.GET.get('limit', 10)
+        answers = answer_list_case(qid, page, limit)
+        serializer = AnswerSerializer(answers, many=True)
+        st = status.HTTP_200_OK
+    elif request.method == 'POST':
+        answer = create_answer_case(request.POST, request.user, qid)
+        serializer = AnswerSerializer(answer)
+        if serializer.is_valid():
+            st = status.HTTP_201_CREATED
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response('Error', status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.data, status=st)

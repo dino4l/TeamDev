@@ -1,3 +1,7 @@
+##
+# @file rest_views.py
+# @brief File with REST API views.
+
 from rest_framework import status, decorators, response, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -85,6 +89,24 @@ def user_id_view(request, uid):
     elif request.method == 'DELETE':
         delete_user_case(uid)
         return Response('Deleted', status=status.HTTP_204_NO_CONTENT)
+    else:
+        return Response('Error', status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.data, status=st)
+
+@api_view(['GET', 'POST', 'PATCH'])
+def settings_view(request):
+    uid = request.user.id
+    if request.method == 'GET':
+        user = settings_case(uid)
+        serializer = ProfileSerializer(user)
+        st = status.HTTP_200_OK
+    elif request.method == 'POST' or request.method == 'PATCH':
+        user = settings_case(uid, request.POST, request.FILES)
+        serializer = ProfileSerializer(user)
+        if serializer.is_valid():
+            st = status.HTTP_202_ACCEPTED
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response('Error', status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.data, status=st)

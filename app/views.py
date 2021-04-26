@@ -1,4 +1,9 @@
-# django
+##
+# @file views.py
+# @brief File with Django views
+#
+# Django views are there (which are MVC controllers).
+
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import  get_object_or_404, render, redirect, reverse

@@ -1,3 +1,9 @@
+##
+# @file forms.py
+# @brief File with user forms
+#
+# Forms include: login form, avatar form, ask form, signip form, comment form and settings form
+
 from django import forms
 from app.models import Question, Comment
 from django.contrib.auth.models import User

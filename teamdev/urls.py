@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from app import views, rest_views
+from django.conf import settings
 from rest_framework.schemas.coreapi import AutoSchema
 from rest_framework_swagger.views import get_swagger_view
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls.static import static
 
 schema_view = get_swagger_view(title='Askme')
 
@@ -50,3 +53,6 @@ urlpatterns = [
     path('api/v2/signin', rest_views.login_view, name='rest_login'),
     path('api/v2/signout', rest_views.logout_view, name='rest_logout'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += staticfiles_urlpatterns()

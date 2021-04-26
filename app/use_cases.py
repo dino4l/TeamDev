@@ -43,6 +43,19 @@ def question_by_id_case(qid, page, limit):
     return question, paginate(question.answer.all(), page, limit)
 
 
+def answer_list_case(qid, page, limit):
+    answers = Comment.objects.filter(question_id=qid)
+    return paginate(answers, page, limit)
+
+
+def create_answer_case(data, user, qid):
+    form = AnswerForm(data)
+    if form.is_valid():
+        a = form.save(qid, user.profile.id)
+    else:
+        a = form.errors
+    return a
+
 
 def users_list_case(page, limit):
     users = Profile.objects.all()
@@ -68,6 +81,12 @@ def settings_case(uid, data=None, files=None):
     else:
         user = form.errors
     return user
+
+
+def tags_list_case(page, limit):
+    tags = Tag.objects.all()
+    return paginate(tags, page, limit)
+
 
 def create_user_case(request=None):
     if request is None:

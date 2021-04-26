@@ -15,7 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from app import views
+from app import views, rest_views
+from django.conf import settings
+from rest_framework.schemas.coreapi import AutoSchema
+from rest_framework_swagger.views import get_swagger_view
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls.static import static
+
+schema_view = get_swagger_view(title='Askme')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,4 +38,21 @@ urlpatterns = [
     path('api/v1/signout/', views.signout, name='signout'),
     path('api/v1/question/<int:pk>/', views.question_page, name='selectedquestion'),
     path('api/v1/tag/<str:pk>/', views.tag_page, name='tagquestions'),
+
+    path('api/v2/swagger/', schema_view),
+    path('api/v2/questions', rest_views.index_view, name='new'),
+    path('api/v2/questions/hot', rest_views.hot_view, name='rest_hot'),
+    path('api/v2/questions/<int:qid>', rest_views.question_id_view, name='one_question'),
+    path('api/v2/questions/<int:qid>/answers', rest_views.question_answer_view, name='rest_answer'),
+    path('api/v2/users', rest_views.users_view, name='users'),
+    path('api/v2/users/<int:uid>', rest_views.user_id_view, name='one_user'),
+    path('api/v2/settings', rest_views.settings_view, name='rest_settings'),
+    path('api/v2/tags', rest_views.tags_view, name='tags'),
+    path('api/v2/tags/<slug:slug>', rest_views.question_tag_view, name='by_tag'),
+    path('api/v2/signup', rest_views.signup_view, name='rest_signup'),
+    path('api/v2/signin', rest_views.login_view, name='rest_login'),
+    path('api/v2/signout', rest_views.logout_view, name='rest_logout'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += staticfiles_urlpatterns()

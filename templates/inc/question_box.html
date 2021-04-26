@@ -1,0 +1,39 @@
+{% load static %}
+
+<div class="row question-box">
+      <! –– For Image ––>
+      <div class="col-3">
+         <img class = "question-img" src = "{{ question.author.image.url }}" width = 100px height = 100px >
+         <div class="row right-side">
+             <input href="#" class="js-vote" type="image" name="dislike" src="{% static "img/dislike.png" %}" alt="Submit" width="19" height="19">
+             <a href="#" class="js-vote" data-action="like" data-pk="{{ question.pk }}">like</a>
+             <div class="rating-title">
+                 {{ question.rating }}
+             </div>
+             <input href="#" class="js-vote" type="image" name="like" src="{% static "img/like.png" %}" alt="Submit" width="19" height="19">
+             <a href="#" class="js-vote" data-action="dislike" data-pk="{{ question.pk }}">dislike</a>
+         </div>
+      </div>
+      <! –– For title and text ––>
+      <div class="col-9">
+          <a class = "question-title" href="{% url 'selectedquestion' question.id %}">{{ question.title }}</a>
+
+         <div class="question-text">
+            {{ question.text }}
+         </div>
+         <div class="row under-question">
+            <div class = "question-answers">
+               <a class = "underlined" href="{% url 'selectedquestion' question.id %}">Ответы ({{ question.answers_number }})</a>
+            </div>
+            <div class="question-tags">
+
+               Теги:
+                {% with tags_question=question.tags.all %}
+                    {% for tagname in tags_question %}
+                        {% include 'inc/tag.html' %}
+                    {% endfor %}
+                {% endwith %}
+            </div>
+         </div>
+      </div>
+   </div>

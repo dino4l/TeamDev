@@ -43,6 +43,32 @@ def question_by_id_case(qid, page, limit):
     return question, paginate(question.answer.all(), page, limit)
 
 
+
+def users_list_case(page, limit):
+    users = Profile.objects.all()
+    return paginate(users, page, limit)
+
+
+def user_id_case(uid):
+    return get_object_or_404(Profile, id=uid)
+
+
+def delete_user_case(uid):
+    user = get_object_or_404(Profile, id=uid)
+    Profile.objects.delete(user)
+
+
+def settings_case(uid, data=None, files=None):
+    if data is None:
+        return SettingsForm().fields
+
+    form = SettingsForm(data, files)
+    if form.is_valid():
+        user = form.save(uid)
+    else:
+        user = form.errors
+    return user
+
 def create_user_case(request=None):
     if request is None:
         return SignupForm().fields

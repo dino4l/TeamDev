@@ -27,6 +27,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly'
+    ]
+}
+
 
 # Application definition
 
@@ -37,9 +46,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'bootstrap4',
+    'rest_framework',
     'app',
 
-
+    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -124,4 +136,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'/static/')
+STATIC_URL = STATIC_ROOT
+
+# Base url to serve media files
+MEDIA_URL = '/img/'
+
+# Path where media is stored
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/img/')
+
+# Login url
+LOGIN_URL = '/signin/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    '/var/www/static/',
+]

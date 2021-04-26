@@ -24,7 +24,7 @@ from rest_framework_swagger.views import get_swagger_view
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 
-schema_view = get_swagger_view(title='Askme')
+schema_view = get_swagger_view(title='teamdev')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

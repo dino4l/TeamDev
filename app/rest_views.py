@@ -89,6 +89,24 @@ def user_id_view(request, uid):
         return Response('Error', status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.data, status=st)
 
+@api_view(['GET', 'POST', 'PATCH'])
+def settings_view(request):
+    uid = request.user.id
+    if request.method == 'GET':
+        user = settings_case(uid)
+        serializer = ProfileSerializer(user)
+        st = status.HTTP_200_OK
+    elif request.method == 'POST' or request.method == 'PATCH':
+        user = settings_case(uid, request.POST, request.FILES)
+        serializer = ProfileSerializer(user)
+        if serializer.is_valid():
+            st = status.HTTP_202_ACCEPTED
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response('Error', status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.data, status=st)
+
 @api_view(['GET'])
 def tags_view(request):
     page = request.GET.get('page', 1)

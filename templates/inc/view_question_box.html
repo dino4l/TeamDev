@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="row view-question-box">
+      <! –– For Image ––>
+      <div class="col-3">
+         <img class = "question-img" src = "{{ question.author.image.url }}" width = 100px height = 100px >
+         <div class="row right-side">
+             <input type="image" name="dislike" src="{% static "img/dislike.png" %}" alt="Submit" width="19" height="19">
+             <div class="rating-title">
+                 {{ question.likes.all.count }}
+             </div>
+             <input type="image" name="like" src="{% static "img/like.png" %}" alt="Submit" width="19" height="19">
+         </div>
+      </div>
+      <! –– For title and text ––>
+      <div class="col-9">
+         <div class="question-title">{{ question.title }}</div>
+         <div class="question-text">
+            {{ question.text }}
+         </div>
+         <div class="row under-question">
+            <div class = "question-answers">
+               <div>Ответы ({{ question.answers_number }})</div>
+            </div>
+            <div class="question-tags">
+               Теги:
+                {% with tags_question=question.tags.all %}
+                    {% for tagname in tags_question %}
+                        {% include 'inc/tag.html' %}
+                    {% endfor %}
+                {% endwith %}
+            </div>
+         </div>
+      </div>
+   </div>

@@ -6,6 +6,43 @@ from .models import *
 from .forms import *
 
 
+def paginate(objects, page, limit=10):
+    if limit > 100:
+        limit = 10
+
+    paginator = Paginator(objects, limit)
+    page = paginator.page(page)
+    return page
+
+
+def new_questions_case(page, limit):
+    questions = Question.objects.newest()
+    return paginate(questions, page, limit)
+
+
+def create_question_case(data, user):
+    form = AskForm(data)
+    if form.is_valid():
+        q = form.save(user.profile.id)
+    else:
+        q = form.errors
+    return q
+
+
+def hot_questions_case(page, limit):
+    questions = Question.objects.hottest()
+    return paginate(questions, page, limit)
+
+def questions_by_tag_case(tag_title, page, limit):
+    questions = Tag.objects.by_tag(tag_title)
+    return paginate(questions, page, limit)
+
+
+def question_by_id_case(qid, page, limit):
+    question = Question.objects.by_id(qid)
+    return question, paginate(question.answer.all(), page, limit)
+
+
 def create_user_case(request=None):
     if request is None:
         return SignupForm().fields

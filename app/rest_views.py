@@ -23,3 +23,11 @@ def index_view(request):
     else:
         return Response('Error', status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.data, status=st)
+
+@api_view(['GET'])
+def hot_view(request):
+    page = request.GET.get('page', 1)
+    limit = request.GET.get('limit', 10)
+    questions = hot_questions_case(page, limit)
+    serializer = QuestionSerializer(questions, many=True)
+    return Response(serializer.data)

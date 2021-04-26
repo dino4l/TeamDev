@@ -88,3 +88,19 @@ def user_id_view(request, uid):
     else:
         return Response('Error', status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.data, status=st)
+
+@api_view(['GET'])
+def tags_view(request):
+    page = request.GET.get('page', 1)
+    limit = request.GET.get('limit', 10)
+    tags = tags_list_case(page, limit)
+    serializer = TagSerializer(tags, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def question_tag_view(request, slug):
+    page = request.GET.get('page', 1)
+    limit = request.GET.get('limit', 10)
+    questions = questions_by_tag_case(slug, page, limit)
+    serializer = QuestionSerializer(questions, many=True)
+    return Response(serializer.data)

@@ -1,3 +1,7 @@
+##
+# @file use_cases.py
+# @brief File contains user cases.
+
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout

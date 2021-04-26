@@ -1,3 +1,7 @@
+##
+# @file rest_views.py
+# @brief File with REST API views.
+
 from rest_framework import status, decorators, response, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes

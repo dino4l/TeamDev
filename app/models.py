@@ -1,3 +1,9 @@
+##
+# @file models.py
+# @brief File with models.
+#
+# Models include ProfileManager, Profile, QuestionManager, Question, CommentManager, Comment and others.
+
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone

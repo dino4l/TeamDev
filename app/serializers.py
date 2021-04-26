@@ -1,3 +1,9 @@
+##
+# @file serializers.py
+# @brief File with model serializers.
+#
+# Model serializers include ProfileSerializer, QuestionSerializer, TagSerializer and AnswerSerializer.
+
 from rest_framework import serializers
 from .models import Profile, Tag, Question, Comment
 

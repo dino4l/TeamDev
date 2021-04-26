@@ -2,6 +2,9 @@ from rest_framework import status, decorators, response, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 
+from django.shortcuts import render, redirect, reverse
+from django.contrib.auth.decorators import login_required
+
 from .use_cases import *
 from .serializers import *
 
@@ -61,6 +64,27 @@ def question_answer_view(request, qid):
             st = status.HTTP_201_CREATED
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response('Error', status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.data, status=st)
+
+@api_view(['GET'])
+def users_view(request):
+    page = request.GET.get('page', 1)
+    limit = request.GET.get('limit', 10)
+    users = users_list_case(page, limit)
+    serializer = ProfileSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET', 'DELETE'])
+def user_id_view(request, uid):
+    if request.method == 'GET':
+        user = user_id_case(uid)
+        serializer = ProfileSerializer(user)
+        st = status.HTTP_200_OK
+    elif request.method == 'DELETE':
+        delete_user_case(uid)
+        return Response('Deleted', status=status.HTTP_204_NO_CONTENT)
     else:
         return Response('Error', status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.data, status=st)

@@ -1,9 +1,15 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+##
+# @file manage.py
+# @brief Django's command-line utility for administrative tasks.
 import os
 import sys
 
-
+##
+# @mainpage TeamDev Project
+#
+# @section description_main Description
+# This is project for team development course at Bauman Moscow State Technical University.
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'teamdev.settings')
     try:

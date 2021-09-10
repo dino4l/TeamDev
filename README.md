@@ -1,4 +1,4 @@
 # TeamDev
-Team Development course 
+Team Development course/project 
 
 [Wiki](https://github.com/dino4l/TeamDev/wiki)
